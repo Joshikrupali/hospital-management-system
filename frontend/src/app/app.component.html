@@ -1,0 +1,30 @@
+<!-- Global Top Navigation Header -->
+<nav class="navbar">
+  <a routerLink="/patients" class="navbar-brand">
+    <span class="badge-icon">OPD</span>
+    <span>OPD Mini Module</span>
+  </a>
+
+  <ul class="nav-links">
+    <li>
+      <a routerLink="/patients" routerLinkActive="active" class="nav-link">
+        🏥 Patients
+      </a>
+    </li>
+    <li>
+      <a routerLink="/appointments" routerLinkActive="active" class="nav-link">
+        📅 Appointments
+      </a>
+    </li>
+  </ul>
+</nav>
+
+<!-- Main App Content Container -->
+<main class="container">
+  <router-outlet></router-outlet>
+</main>
+
+<!-- Footer -->
+<footer>
+  <p>OPD Mini Module © 2026 | Practical Assignment Demo</p>
+</footer>

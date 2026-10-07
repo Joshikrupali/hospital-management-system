@@ -1,0 +1,144 @@
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Appointment Booking & OPD Queue</h1>
+    <p class="page-subtitle">Schedule OPD appointments for registered patients and manage today's queue</p>
+  </div>
+</div>
+
+<!-- Alert Messages -->
+<div *ngIf="successMessage" class="alert alert-success">
+  <span>✓ {{ successMessage }}</span>
+  <button type="button" class="btn btn-sm btn-secondary" (click)="successMessage = ''">✕</button>
+</div>
+
+<div *ngIf="errorMessage" class="alert alert-danger">
+  <span>⚠️ {{ errorMessage }}</span>
+  <button type="button" class="btn btn-sm btn-secondary" (click)="errorMessage = ''">✕</button>
+</div>
+
+<!-- Appointment Booking Form Card -->
+<div class="card">
+  <h2 class="card-title">Book New OPD Appointment</h2>
+
+  <form (ngSubmit)="bookAppointment()">
+    <div class="form-grid">
+      <!-- Select Patient Dropdown -->
+      <div class="form-group">
+        <label for="patientSelect">Select Patient <span class="required">*</span></label>
+        <select id="patientSelect" name="selectedPatientId" [(ngModel)]="selectedPatientId" required>
+          <option [ngValue]="null">-- Select Registered Patient --</option>
+          <option *ngFor="let pat of patientsList" [value]="pat.id">
+            {{ pat.name }} (ID: {{ pat.id }}, Phone: {{ pat.phoneNumber }})
+          </option>
+        </select>
+        <p *ngIf="patientsList.length === 0" class="error-text">
+          No patients registered yet. <a [routerLink]="['/patients']">Register Patient first</a>.
+        </p>
+      </div>
+
+      <!-- Doctor Name -->
+      <div class="form-group">
+        <label for="doctorName">Doctor Name <span class="required">*</span></label>
+        <input 
+          type="text" 
+          id="doctorName" 
+          name="doctorName" 
+          [(ngModel)]="doctorName" 
+          placeholder="e.g. Dr. Amit Patel" 
+          required 
+        />
+      </div>
+
+      <!-- Appointment Date -->
+      <div class="form-group">
+        <label for="appointmentDate">Appointment Date <span class="required">*</span></label>
+        <input 
+          type="date" 
+          id="appointmentDate" 
+          name="appointmentDate" 
+          [(ngModel)]="appointmentDate" 
+          required 
+        />
+      </div>
+
+      <!-- Appointment Time -->
+      <div class="form-group">
+        <label for="appointmentTime">Appointment Time <span class="required">*</span></label>
+        <input 
+          type="time" 
+          id="appointmentTime" 
+          name="appointmentTime" 
+          [(ngModel)]="appointmentTime" 
+          required 
+        />
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary" [disabled]="isSubmitting || patientsList.length === 0">
+        <span>Book Appointment</span>
+      </button>
+    </div>
+  </form>
+</div>
+
+<!-- Today's Appointments Table Card -->
+<div class="card">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+    <h2 class="card-title" style="margin-bottom: 0; border: none; padding: 0;">Today's OPD Appointments List</h2>
+    <button class="btn btn-secondary btn-sm" (click)="loadTodayAppointments()">🔄 Refresh Today's List</button>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Appointment ID</th>
+          <th>Patient Name</th>
+          <th>Doctor</th>
+          <th>Date / Time</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let app of todayAppointments">
+          <td><strong>#{{ app.id }}</strong></td>
+          <td>
+            <strong>{{ app.patient?.name }}</strong>
+            <div style="font-size: 0.8rem; color: #64748b;">Phone: {{ app.patient?.phoneNumber }}</div>
+          </td>
+          <td>{{ app.doctorName }}</td>
+          <td>{{ app.appointmentDateTime | date:'medium' }}</td>
+          <td>
+            <span 
+              class="badge" 
+              [ngClass]="{
+                'badge-booked': app.status === 'BOOKED',
+                'badge-completed': app.status === 'COMPLETED'
+              }">
+              {{ app.status }}
+            </span>
+          </td>
+          <td>
+            <button 
+              *ngIf="app.status === 'BOOKED'" 
+              class="btn btn-success btn-sm" 
+              (click)="startConsultation(app)">
+              Consult
+            </button>
+
+            <span *ngIf="app.status === 'COMPLETED'" class="badge badge-completed">
+              Completed
+            </span>
+          </td>
+        </tr>
+        <tr *ngIf="todayAppointments.length === 0">
+          <td colspan="6" style="text-align: center; color: #94a3b8; padding: 2rem;">
+            No appointments scheduled for today. Use the form above to book an appointment.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

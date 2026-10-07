@@ -1,0 +1,63 @@
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Patient Consultation History</h1>
+    <p class="page-subtitle">Complete medical & consultation records for the selected patient</p>
+  </div>
+  <a [routerLink]="['/patients']" class="btn btn-secondary">← Back to Patients</a>
+</div>
+
+<div *ngIf="errorMessage" class="alert alert-danger">
+  <span>⚠️ {{ errorMessage }}</span>
+</div>
+
+<!-- Patient Banner -->
+<div *ngIf="patient" class="card" style="background-color: #f0f9ff; border-color: #bae6fd;">
+  <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
+    <div><strong>Patient Name:</strong> {{ patient.name }}</div>
+    <div><strong>Gender / Age:</strong> {{ patient.gender }}, {{ patient.age }} yrs</div>
+    <div><strong>Phone:</strong> {{ patient.phoneNumber }}</div>
+    <div><strong>Patient ID:</strong> #{{ patient.id }}</div>
+  </div>
+</div>
+
+<!-- Loading state -->
+<div *ngIf="isLoading" class="card" style="text-align: center; padding: 2rem;">
+  <p>Loading consultation history...</p>
+</div>
+
+<!-- Consultations Table -->
+<div *ngIf="!isLoading" class="card">
+  <h2 class="card-title">Completed Consultations ({{ consultations.length }})</h2>
+
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Consultation Date</th>
+          <th>Doctor Name</th>
+          <th>Temperature (°F)</th>
+          <th>Blood Pressure</th>
+          <th>Clinical Notes</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let c of consultations">
+          <td><strong>{{ c.consultationDate | date:'medium' }}</strong></td>
+          <td>{{ c.appointment?.doctorName }}</td>
+          <td><span style="font-weight: 600; color: #0284c7;">{{ c.temperature }} °F</span></td>
+          <td><span style="font-weight: 600; color: #059669;">{{ c.bloodPressure }}</span></td>
+          <td style="max-width: 300px; white-space: pre-wrap;">{{ c.notes }}</td>
+          <td>
+            <span class="badge badge-completed">{{ c.status }}</span>
+          </td>
+        </tr>
+        <tr *ngIf="consultations.length === 0">
+          <td colspan="6" style="text-align: center; color: #94a3b8; padding: 2rem;">
+            No completed consultations found for this patient.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
